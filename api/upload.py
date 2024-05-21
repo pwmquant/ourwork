@@ -19,14 +19,17 @@ def upload_file():
     return jsonify({"transcription": transcription})
 
 def transcribe_audio(file_path):
-    api_key = os.getenv('AAI_API')
+    api_key = os.getenv('AAI_API')  # Ensure this environment variable is set with your AssemblyAI API key
+    if not api_key:
+        return "API key not found", 500
+    
     headers = {'authorization': api_key}
     with open(file_path, 'rb') as f:
         response = requests.post('https://api.assemblyai.com/v2/upload', headers=headers, files={'file': f})
-    upload_url = response.json()['upload_url']
+    upload_url = response.json().get('upload_url')
 
     response = requests.post('https://api.assemblyai.com/v2/transcript', headers=headers, json={'audio_url': upload_url})
-    transcript_id = response.json()['id']
+    transcript_id = response.json().get('id')
 
     while True:
         response = requests.get(f'https://api.assemblyai.com/v2/transcript/{transcript_id}', headers=headers)
@@ -37,4 +40,4 @@ def transcribe_audio(file_path):
             return 'Transcription failed'
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
