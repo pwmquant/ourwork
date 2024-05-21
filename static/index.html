@@ -34,6 +34,7 @@
                 document.getElementById('transcriptionResult').innerText = result.transcription;
             } catch (error) {
                 console.error('Error:', error);
+                document.getElementById('transcriptionResult').innerText = 'Error uploading file';
             }
         });
     </script>
